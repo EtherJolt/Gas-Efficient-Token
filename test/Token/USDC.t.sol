@@ -4,7 +4,7 @@ pragma solidity ^0.8.28;
 import { TokenTestsBase } from "test/Base/TokenTestsBase.t.sol";
 
 /**
- * $forge test --match-path test/Token/StandardToken.t.sol --gas-report
+ * $forge test --match-path test/Token/USDC.t.sol --gas-report
  */
 contract StandardTokenTests is TokenTestsBase {
     
