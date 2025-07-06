@@ -5,6 +5,7 @@ import { ContractDeploymentBase } from "test/Base/ContractDeploymentBase.t.sol";
 import { ERC20Permit } from "@/core/ModERC20Permit.sol";
 import { IERC20PermitConfig } from "@/interface/IModERC20Permit.sol";
 import { OpenZepERC20Permit } from '@/core/OpenZeppelinERC20Permit.sol';
+import { FiatTokenV2_2 } from "@/core/USDC/FiatTokenV2_2.sol";
 
 /**
  * THIS LOCAL TESTING UTIL CONTRUCTS TOKEN PERMITS WITHIN FOUNDRY TEST ENVIRIONMENT
@@ -56,71 +57,36 @@ contract TokenTestsBase is ContractDeploymentBase, IERC20PermitConfig {
             0x6e71edae12b1b97f4d1f60370fef10105fa2faae0126114a169c64845d6126c9
         );
     }
+  
     ///
     /// SIGNATURES
     ///
-
-    // Gas Optimized token ===================================
 
     function makeErc20Permit(
         address owner,
         address spender,
         uint value,
-        ERC20Permit token
-    ) public view returns (ERC20TokenPermit memory) { 
+        uint nonce
+    ) public pure returns (ERC20TokenPermit memory) { 
         return ERC20TokenPermit({
             owner: owner,
             spender: spender,
             value: value,
-            nonce: token.nonces(owner),
+            nonce: nonce,
             deadline: 1 days
         });
     }
 
     // computes the hash of the fully encoded EIP-712 message for the domain, which can be used to recover the signer
     function getErc20TypedDataHash(
-        ERC20Permit token, 
+        bytes32 DOMAIN_SEPARATOR, 
         ERC20TokenPermit memory _permit
-    ) internal view returns (bytes32) {
+    ) internal pure returns (bytes32) {
         return
             keccak256(
                 abi.encodePacked(
                     "\x19\x01",
-                    token.DOMAIN_SEPARATOR(),
-                    getErc20StructHash(_permit)
-                )
-            );
-    }
-
-    //
-    // Open Zep token ===================================
-    //
-    
-    function makeOpenZepErc20Permit(
-        address owner,
-        address spender,
-        uint value,
-        OpenZepERC20Permit token
-    ) public view returns (ERC20TokenPermit memory) { 
-        return ERC20TokenPermit({
-            owner: owner,
-            spender: spender,
-            value: value,
-            nonce: token.nonces(owner),
-            deadline: 1 days
-        });
-    }
-
-    // // computes the hash of the fully encoded EIP-712 message for the domain, which can be used to recover the signer
-    function getErc20TypedDataHash(
-        OpenZepERC20Permit token, 
-        ERC20TokenPermit memory _permit
-    ) internal view returns (bytes32) {
-        return
-            keccak256(
-                abi.encodePacked(
-                    "\x19\x01",
-                    token.DOMAIN_SEPARATOR(),
+                    DOMAIN_SEPARATOR,
                     getErc20StructHash(_permit)
                 )
             );

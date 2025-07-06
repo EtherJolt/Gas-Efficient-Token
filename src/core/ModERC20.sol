@@ -3,7 +3,7 @@
 pragma solidity ^0.8.28;
 
 import { IERC20 } from "@/interface/IModERC20.sol";
-import { Context } from "@/utils/Context.sol";
+import { Ownable } from "@/utils/Ownable.sol";
 
 /**
  * @dev Implementation of the {IERC20} interface.
@@ -33,7 +33,7 @@ import { Context } from "@/utils/Context.sol";
  * functions have been added to mitigate the well-known issues around setting
  * allowances. See {IERC20-approve}.
  */
-contract ERC20 is Context, IERC20 {
+contract ERC20 is Ownable, IERC20 {
 
     error InsufficientAllowance();
     error InvalidAllowance();
@@ -57,7 +57,7 @@ contract ERC20 is Context, IERC20 {
     ){
         _name = name_;
         _symbol = symbol_;
-        _balances[msg.sender] = initialSupply;
+        mint(msg.sender, initialSupply);
     }
 
     /**
@@ -199,7 +199,7 @@ contract ERC20 is Context, IERC20 {
      *
      * - `account` cannot be the zero address.
      */
-    function _mint(address account, uint256 amount) internal {
+    function mint(address account, uint256 amount) public onlyOwner {
         if(account == address(0)) revert InvalidRecipient();
 
         _totalSupply += amount;
@@ -236,18 +236,8 @@ contract ERC20 is Context, IERC20 {
      *
      * This internal function is equivalent to `approve`, and can be used to
      * e.g. set automatic allowances for certain subsystems, etc.
-     *
-     * Emits an {Approval} event.
-     *
-     * Requirements:
-     *
-     * - `owner` cannot be the zero address.
-     * - `spender` cannot be the zero address.
      */
     function _approve(address owner, address spender, uint256 amount) internal {
-        if(owner == address(0)) revert InvalidSender();
-        if(spender == address(0)) revert InvalidRecipient();
-
         _allowances[owner][spender] = amount;
     }
 
@@ -261,6 +251,7 @@ contract ERC20 is Context, IERC20 {
      */
     function _spendAllowance(address owner, address spender, uint256 amount) internal {
         uint256 currentAllowance = allowance(owner, spender);
+        // if (currentAllowance != ~uint(0)) {
         if (currentAllowance != type(uint256).max) {
             if(currentAllowance < amount) revert InsufficientAllowance();
             unchecked {

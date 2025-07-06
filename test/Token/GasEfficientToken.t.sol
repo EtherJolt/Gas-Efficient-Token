@@ -13,9 +13,9 @@ contract GasEfficientTokenTests is TokenTestsBase {
         TokenTestsBase.setUp();
     }
 
-    function skip_test_token_config() public view {
-        assertEq(gasEfficientToken.name(), 'USD Coin');
-        assertEq(gasEfficientToken.symbol(), 'USDC');
+    function test_token_config() public view {
+        assertEq(gasEfficientToken.name(), 'Dollar');
+        assertEq(gasEfficientToken.symbol(), 'D');
         assertEq(gasEfficientToken.decimals(), 6);
         assertEq(gasEfficientToken.totalSupply(), _initialSupply); // 1 tillion token supply
     }
@@ -50,11 +50,11 @@ contract GasEfficientTokenTests is TokenTestsBase {
             TokenOwner, 
             Alice, /// Alice receives tokens
             transferAmount,
-            gasEfficientToken
+            gasEfficientToken.nonces(TokenOwner)
         );
 
         /// prepare message && sign message with tokenOwner
-        bytes32 digest = getErc20TypedDataHash(gasEfficientToken, tokenPermit);
+        bytes32 digest = getErc20TypedDataHash(gasEfficientToken.DOMAIN_SEPARATOR(), tokenPermit);
 
         /// token permit must be signed by token owner
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(TokenOwnerKey, digest);

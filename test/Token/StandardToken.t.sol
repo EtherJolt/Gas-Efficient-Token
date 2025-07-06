@@ -44,15 +44,15 @@ contract StandardTokenTests is TokenTestsBase {
          **/
 
         /// build permit for token to be used in paymet [USDC]
-        ERC20TokenPermit memory tokenPermit = makeOpenZepErc20Permit(
+        ERC20TokenPermit memory tokenPermit = makeErc20Permit(
             TokenOwner, 
             Alice, /// Alice receives tokens
             transferAmount,
-            openZepToken
+            openZepToken.nonces(TokenOwner)
         );
 
         /// prepare message && sign message with tokenOwner
-        bytes32 digest = getErc20TypedDataHash(openZepToken, tokenPermit);
+        bytes32 digest = getErc20TypedDataHash(openZepToken.DOMAIN_SEPARATOR(), tokenPermit);
 
         /// token permit must be signed by token owner
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(TokenOwnerKey, digest);
