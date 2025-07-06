@@ -8,7 +8,8 @@ The Gas reports below demonstrate the costs of including additional functionalit
 
 Generate Report: forge test --match-path test/Token/USDC.t.sol --gas-report	
 
-<img src="./images/GasReport_USDC.png" alt="USDC Gas Report" width="200", height="200" />
+![USDC Gas Report](./images/GasReport_USDC.png){width="200", height="200"}
+
 
 ## Standard Openzeppelin ERC20 Token
 
